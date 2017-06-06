@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+
+dub ensure ZOOKEEPER_CLIENT_PORT
+
+dub path /etc/kafka/ writable
+
+HOST=`hostname -s`
+
+# myid is required for clusters
+if [[ -n "${ZOOKEEPER_SERVERS-}" ]]
+then
+  dub ensure ZOOKEEPER_SERVER_ID
+  export ZOOKEEPER_INIT_LIMIT=${ZOOKEEPER_INIT_LIMIT:-"10"}
+  export ZOOKEEPER_SYNC_LIMIT=${ZOOKEEPER_SYNC_LIMIT:-"5"}
+fi
+
+# If ZOOKEEPER_SERVER_ID is not defined, check if it's a kubernetes style host name
+if [ -z "${ZOOKEEPER_SERVER_ID}" ]; then
+  if [[ $HOST =~ (.*)-([0-9]+)$ ]]; then
+		NAME=${BASH_REMATCH[1]}
+		ORD=${BASH_REMATCH[2]}
+
+    export ZOOKEEPER_SERVER_ID = $((ORD+1))
+
+    echo "ZOOKEEPER_SERVER_ID=$ZOOKEEPER_SERVER_ID"
+  else
+    echo "Failed to extract ordinal from hostname $HOST"
+    exit 1
+  fi 
+fi
+
+if [[ -n "${ZOOKEEPER_SERVER_ID-}" ]]
+then
+  dub template "/etc/confluent/docker/myid.template" "/var/lib/${COMPONENT}/data/myid"
+fi
+
+if [[ -n "${KAFKA_JMX_OPTS-}" ]]
+then
+  if [[ ! $KAFKA_JMX_OPTS == *"com.sun.management.jmxremote.rmi.port"*  ]]
+  then
+    echo "KAFKA_OPTS should contain 'com.sun.management.jmxremote.rmi.port' property. It is required for accessing the JMX metrics externally."
+  fi
+fi
+
+dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/kafka/${COMPONENT}.properties"
+dub template "/etc/confluent/docker/log4j.properties.template" "/etc/kafka/log4j.properties"
+dub template "/etc/confluent/docker/tools-log4j.properties.template" "/etc/kafka/tools-log4j.properties"
+

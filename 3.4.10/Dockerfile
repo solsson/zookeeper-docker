@@ -22,7 +22,7 @@ RUN set -x \
     && chown "$ZOO_USER:$ZOO_USER" "$ZOO_DATA_LOG_DIR" "$ZOO_DATA_DIR" "$ZOO_CONF_DIR"
 
 ARG GPG_KEY=C823E3E5B12AF29C67F81976F5CECB3CB5E9BD2D
-ARG DISTRO_NAME=zookeeper-3.4.9
+ARG DISTRO_NAME=zookeeper-3.4.10
 
 # Download Apache Zookeeper, verify its PGP signature, untar and clean up
 RUN set -x \
@@ -39,7 +39,7 @@ RUN set -x \
     && apk del .build-deps
 
 WORKDIR $DISTRO_NAME
-VOLUME ["$ZOO_DATA_DIR", "$ZOO_DATA_LOG_DIR", "$ZOO_CONF_DIR"]
+VOLUME ["$ZOO_DATA_DIR", "$ZOO_DATA_LOG_DIR"]
 
 EXPOSE $ZOO_PORT 2888 3888
 
