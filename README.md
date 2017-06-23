@@ -106,6 +106,9 @@ Environment variables below are mandatory if you want to run Zookeeper in replic
 
 The id must be unique within the ensemble and should have a value between 1 and 255. Do note that this variable will not have any effect if you start the container with a `/data` directory that already contains the `myid` file.
 
+If there is neither a `ZOO_DATA_DIR` nor a `ZOO_MY_ID`, the entrypoint script will try to guess ordinal from hostname.
+Assumes that hostname ends with a dash and a 0-based index, like in Kubernetes [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#ordinal-index)s.
+
 ### `ZOO_SERVERS`
 
 This variable allows you to specify a list of machines of the Zookeeper ensemble. Each entry has the form of `server.id=host:port:port`. Entries are separated with space. Do note that this variable will not have any effect if you start the container with a `/conf` directory that already contains the `zoo.cfg` file.
