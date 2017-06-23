@@ -32,8 +32,8 @@ if [ ! -f "$ZOO_DATA_DIR/myid" ]; then
         echo "Guessed server id: $ZOO_MY_ID"
         # Tries to bind to it's own server entry, which won't work with names ("Exception while listening java.net.SocketException: Unresolved address")
         cp $ZOO_CONF_DIR/zoo.cfg $ZOO_CONF_DIR/zoo.cfg.org
-        sed -i s/server\.$ZOO_MY_ID\=[a-z0-9.-]*/server.$ZOO_MY_ID=0.0.0.0/ "$ZOO_CONF_DIR/zoo.cfg"
-        diff -u $ZOO_CONF_DIR/zoo.cfg.org $ZOO_CONF_DIR/zoo.cfg
+        sed -i "s/server\.$ZOO_MY_ID\=[a-z0-9.-]*/server.$ZOO_MY_ID=0.0.0.0/" "$ZOO_CONF_DIR/zoo.cfg"
+        diff -s -u $ZOO_CONF_DIR/zoo.cfg.org $ZOO_CONF_DIR/zoo.cfg || echo "Fixed bind address for this instance"
     fi
     echo "${ZOO_MY_ID:-1}" > "$ZOO_DATA_DIR/myid"
 fi
