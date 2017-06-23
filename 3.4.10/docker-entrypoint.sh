@@ -27,6 +27,12 @@ fi
 
 # Write myid only if it doesn't exist
 if [ ! -f "$ZOO_DATA_DIR/myid" ]; then
+    if [ -z "$ZOO_MY_ID" ]; then
+        ZOO_MY_ID=$(($(hostname | sed s/.*-//) + 1))
+        echo "Guessed server id: $ZOO_MY_ID"
+        # Tries to bind to it's own server entry, which won't work with names ("Exception while listening java.net.SocketException: Unresolved address")
+        sed -i s/server\.$ZOO_MY_ID\=[a-z0-9.-]*/server.$ZOO_MY_ID=0.0.0.0/ "$ZOO_CONF_DIR/zoo.cfg"
+    fi
     echo "${ZOO_MY_ID:-1}" > "$ZOO_DATA_DIR/myid"
 fi
 
