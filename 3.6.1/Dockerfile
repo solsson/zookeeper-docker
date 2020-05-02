@@ -1,4 +1,4 @@
-FROM adoptopenjdk:11.0.7_10-jre-hotspot-bionic@sha256:a119e89693cfca250cecc3756c5efb5fdf523d93d813003b3c2a1d29d8884211
+FROM solsson/kafka:2.5.0-graalvm@sha256:281c03203b9d0d822474de2878492f0b1c64ced229a2c52add1ce757fd6bf73e
 
 ENV ZOO_CONF_DIR=/conf \
     ZOO_DATA_DIR=/data \
