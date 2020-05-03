@@ -82,3 +82,5 @@ ENV PATH=$PATH:/$DISTRO_NAME/bin \
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["zkServer.sh", "start-foreground"]
+
+RUN sed -i 's|"${ZOO_CMD|echo "# Entrypoint would evaluate to:"; echo "${ZOO_CMD|' bin/zkServer.sh
